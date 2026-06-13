@@ -6,16 +6,19 @@ from src.equilibrium import (
 )
 from src.ignition_delay import (
     run_ignition_delay_grid,
+    run_reactor_model_comparison,
     save_ignition_delay_results,
+    save_reactor_model_comparison,
 )
 from src.plotting import (
     generate_equilibrium_figures,
     generate_ignition_delay_figures,
+    plot_reactor_model_comparison,
 )
 
 
 def main() -> None:
-    """Run the available combustion analyses."""
+    """Run all currently implemented combustion analyses."""
     print("Running equilibrium combustion analysis...")
 
     equilibrium_results = run_equilibrium_grid()
@@ -25,7 +28,7 @@ def main() -> None:
     generate_equilibrium_figures(equilibrium_results)
 
     print()
-    print("Running ignition-delay analysis...")
+    print("Running constant-pressure ignition-delay analysis...")
 
     ignition_results = run_ignition_delay_grid()
     save_ignition_delay_results(ignition_results)
@@ -34,9 +37,19 @@ def main() -> None:
     generate_ignition_delay_figures(ignition_results)
 
     print()
+    print("Comparing constant-volume and constant-pressure reactors...")
+
+    comparison_results = run_reactor_model_comparison()
+    save_reactor_model_comparison(comparison_results)
+
+    print("Generating reactor-model comparison figure...")
+    plot_reactor_model_comparison(comparison_results)
+
+    print()
     print(
-        f"Completed {len(equilibrium_results)} equilibrium cases "
-        f"and {len(ignition_results)} ignition-delay cases."
+        f"Completed {len(equilibrium_results)} equilibrium cases, "
+        f"{len(ignition_results)} primary ignition-delay cases, "
+        f"and {len(comparison_results)} reactor-model comparisons."
     )
 
 

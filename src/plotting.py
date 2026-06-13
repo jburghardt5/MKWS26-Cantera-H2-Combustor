@@ -189,3 +189,30 @@ def generate_ignition_delay_figures(
     """Generate figures based on ignition-delay calculations."""
     plot_ignition_delay_vs_temperature(dataframe)
     plot_ignition_delay_vs_hydrogen_fraction(dataframe)
+
+
+def plot_reactor_model_comparison(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot the influence of reactor formulation on ignition delay."""
+    plt.figure(figsize=(8, 5))
+
+    for h2_fraction, group in dataframe.groupby("h2_fraction"):
+        group = group.sort_values("initial_temperature_k")
+
+        plt.plot(
+            group["initial_temperature_k"],
+            group["cp_minus_cv_percent"],
+            marker="o",
+            label=f"{100 * h2_fraction:.0f}% H2",
+        )
+
+    plt.xlabel("Initial temperature [K]")
+    plt.ylabel(
+        "Increase in ignition delay for constant-pressure model [%]"
+    )
+    plt.title("Influence of reactor formulation on ignition delay")
+    plt.grid(True, alpha=0.3)
+    plt.legend(title="Hydrogen content in fuel blend")
+
+    _save_figure("reactor_model_comparison.png")
