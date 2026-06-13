@@ -21,6 +21,10 @@ from src.config import (
     PRESSURE_SWEEP_H2_FRACTIONS,
     PRESSURE_SWEEP_INITIAL_TEMPERATURE_K,
     PRESSURE_SWEEP_VALUES_ATM,
+    EQUIVALENCE_RATIO_SWEEP_H2_FRACTIONS,
+    EQUIVALENCE_RATIO_SWEEP_INITIAL_TEMPERATURE_K,
+    EQUIVALENCE_RATIO_SWEEP_PRESSURE_ATM,
+    EQUIVALENCE_RATIO_SWEEP_VALUES,
     REACTOR_MODEL_COMPARISON_H2_FRACTIONS,
     REACTOR_MODEL_COMPARISON_TEMPERATURES_K,
     RESULTS_DATA_DIR,
@@ -470,6 +474,78 @@ def save_pressure_sweep_results(
 
     print(
         f"Pressure-sweep results saved to: "
+        f"{output_path}"
+    )
+
+
+def run_equivalence_ratio_sweep() -> pd.DataFrame:
+    """Evaluate equivalence-ratio influence on ignition delay."""
+    results: list[dict[str, float | str | int]] = []
+
+    number_of_cases = (
+        len(EQUIVALENCE_RATIO_SWEEP_H2_FRACTIONS)
+        * len(EQUIVALENCE_RATIO_SWEEP_VALUES)
+    )
+    case_number = 0
+
+    for h2_fraction in EQUIVALENCE_RATIO_SWEEP_H2_FRACTIONS:
+        for phi in EQUIVALENCE_RATIO_SWEEP_VALUES:
+            case_number += 1
+
+            print(
+                f"Equivalence-ratio case "
+                f"{case_number}/{number_of_cases}: "
+                f"H2 = {100 * h2_fraction:.0f}%, "
+                f"phi = {phi:.1f}"
+            )
+
+            try:
+                summary, _ = simulate_ignition_case(
+                    h2_fraction=h2_fraction,
+                    initial_temperature_k=(
+                        EQUIVALENCE_RATIO_SWEEP_INITIAL_TEMPERATURE_K
+                    ),
+                    pressure_atm=(
+                        EQUIVALENCE_RATIO_SWEEP_PRESSURE_ATM
+                    ),
+                    phi=phi,
+                    reactor_model=IGNITION_REACTOR_MODEL,
+                )
+
+            except ct.CanteraError as error:
+                summary = build_solver_error_result(
+                    h2_fraction=h2_fraction,
+                    initial_temperature_k=(
+                        EQUIVALENCE_RATIO_SWEEP_INITIAL_TEMPERATURE_K
+                    ),
+                    pressure_atm=(
+                        EQUIVALENCE_RATIO_SWEEP_PRESSURE_ATM
+                    ),
+                    phi=phi,
+                    reactor_model=IGNITION_REACTOR_MODEL,
+                    error=error,
+                )
+
+            results.append(summary)
+
+    return pd.DataFrame(results)
+
+
+def save_equivalence_ratio_sweep_results(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Save equivalence-ratio sweep results."""
+    RESULTS_DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    output_path = (
+        RESULTS_DATA_DIR
+        / "equivalence_ratio_sweep_results.csv"
+    )
+
+    dataframe.to_csv(output_path, index=False)
+
+    print(
+        f"Equivalence-ratio sweep results saved to: "
         f"{output_path}"
     )
 

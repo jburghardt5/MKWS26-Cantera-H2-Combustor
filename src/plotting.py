@@ -253,3 +253,70 @@ def plot_ignition_delay_vs_pressure(
     plt.legend(title="Hydrogen content in fuel blend")
 
     _save_figure("ignition_delay_vs_pressure.png")
+
+
+def plot_ignition_delay_vs_equivalence_ratio(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot ignition delay against equivalence ratio."""
+    ignited_cases = dataframe.loc[
+        dataframe["status"] == "ignited"
+    ].copy()
+
+    plt.figure(figsize=(8, 5))
+
+    for h2_fraction, group in ignited_cases.groupby(
+        "h2_fraction"
+    ):
+        group = group.sort_values("phi")
+
+        plt.plot(
+            group["phi"],
+            group["ignition_delay_ms"],
+            marker="o",
+            label=f"{100 * h2_fraction:.0f}% H2",
+        )
+
+    plt.xlabel(r"Equivalence ratio, $\phi$")
+    plt.ylabel("Ignition delay [ms]")
+    plt.title("Influence of equivalence ratio on ignition delay")
+    plt.yscale("log")
+    plt.grid(True, which="both", alpha=0.3)
+    plt.legend(title="Hydrogen content in fuel blend")
+
+    _save_figure(
+        "ignition_delay_vs_equivalence_ratio.png"
+    )
+
+
+def plot_maximum_temperature_vs_equivalence_ratio(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot maximum reactor temperature against equivalence ratio."""
+    ignited_cases = dataframe.loc[
+        dataframe["status"] == "ignited"
+    ].copy()
+
+    plt.figure(figsize=(8, 5))
+
+    for h2_fraction, group in ignited_cases.groupby(
+        "h2_fraction"
+    ):
+        group = group.sort_values("phi")
+
+        plt.plot(
+            group["phi"],
+            group["maximum_temperature_k"],
+            marker="o",
+            label=f"{100 * h2_fraction:.0f}% H2",
+        )
+
+    plt.xlabel(r"Equivalence ratio, $\phi$")
+    plt.ylabel("Maximum reactor temperature [K]")
+    plt.title("Maximum temperature versus equivalence ratio")
+    plt.grid(True, alpha=0.3)
+    plt.legend(title="Hydrogen content in fuel blend")
+
+    _save_figure(
+        "maximum_temperature_vs_equivalence_ratio.png"
+    )

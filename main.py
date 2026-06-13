@@ -5,9 +5,11 @@ from src.equilibrium import (
     save_equilibrium_results,
 )
 from src.ignition_delay import (
+    run_equivalence_ratio_sweep,
     run_ignition_delay_grid,
     run_pressure_sweep,
     run_reactor_model_comparison,
+    save_equivalence_ratio_sweep_results,
     save_ignition_delay_results,
     save_pressure_sweep_results,
     save_reactor_model_comparison,
@@ -15,7 +17,9 @@ from src.ignition_delay import (
 from src.plotting import (
     generate_equilibrium_figures,
     generate_ignition_delay_figures,
+    plot_ignition_delay_vs_equivalence_ratio,
     plot_ignition_delay_vs_pressure,
+    plot_maximum_temperature_vs_equivalence_ratio,
     plot_reactor_model_comparison,
 )
 
@@ -26,8 +30,6 @@ def main() -> None:
 
     equilibrium_results = run_equilibrium_grid()
     save_equilibrium_results(equilibrium_results)
-
-    print("Generating equilibrium figures...")
     generate_equilibrium_figures(equilibrium_results)
 
     print()
@@ -35,20 +37,13 @@ def main() -> None:
 
     ignition_results = run_ignition_delay_grid()
     save_ignition_delay_results(ignition_results)
-
-    print("Generating ignition-delay figures...")
     generate_ignition_delay_figures(ignition_results)
 
     print()
-    print(
-        "Comparing constant-volume and "
-        "constant-pressure reactors..."
-    )
+    print("Comparing constant-volume and constant-pressure reactors...")
 
     comparison_results = run_reactor_model_comparison()
     save_reactor_model_comparison(comparison_results)
-
-    print("Generating reactor-model comparison figure...")
     plot_reactor_model_comparison(comparison_results)
 
     print()
@@ -56,16 +51,31 @@ def main() -> None:
 
     pressure_results = run_pressure_sweep()
     save_pressure_sweep_results(pressure_results)
-
-    print("Generating pressure-sweep figure...")
     plot_ignition_delay_vs_pressure(pressure_results)
+
+    print()
+    print("Running equivalence-ratio sweep...")
+
+    equivalence_ratio_results = run_equivalence_ratio_sweep()
+    save_equivalence_ratio_sweep_results(
+        equivalence_ratio_results
+    )
+
+    plot_ignition_delay_vs_equivalence_ratio(
+        equivalence_ratio_results
+    )
+    plot_maximum_temperature_vs_equivalence_ratio(
+        equivalence_ratio_results
+    )
 
     print()
     print(
         f"Completed {len(equilibrium_results)} equilibrium cases, "
         f"{len(ignition_results)} primary ignition-delay cases, "
         f"{len(comparison_results)} reactor-model comparisons, "
-        f"and {len(pressure_results)} pressure-sweep cases."
+        f"{len(pressure_results)} pressure-sweep cases, "
+        f"and {len(equivalence_ratio_results)} "
+        "equivalence-ratio cases."
     )
 
 
