@@ -115,3 +115,77 @@ def generate_equilibrium_figures(
         title="Equilibrium H2O concentration",
         filename="h2o_vs_phi.png",
     )
+
+
+def plot_ignition_delay_vs_temperature(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot ignition delay against initial temperature."""
+    ignited_cases = dataframe.loc[
+        dataframe["status"] == "ignited"
+    ].copy()
+
+    plt.figure(figsize=(8, 5))
+
+    for h2_fraction, group in ignited_cases.groupby("h2_fraction"):
+        group = group.sort_values("initial_temperature_k")
+
+        plt.plot(
+            group["initial_temperature_k"],
+            group["ignition_delay_ms"],
+            marker="o",
+            label=f"{100 * h2_fraction:.0f}% H2",
+        )
+
+    plt.xlabel("Initial temperature [K]")
+    plt.ylabel("Ignition delay [ms]")
+    plt.title("Ignition delay versus initial temperature")
+    plt.yscale("log")
+    plt.grid(True, which="both", alpha=0.3)
+    plt.legend(title="Hydrogen fraction in fuel")
+
+    _save_figure("ignition_delay_vs_temperature.png")
+
+
+def plot_ignition_delay_vs_hydrogen_fraction(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot ignition delay against hydrogen fraction."""
+    ignited_cases = dataframe.loc[
+        dataframe["status"] == "ignited"
+    ].copy()
+
+    ignited_cases["h2_percentage"] = (
+        100.0 * ignited_cases["h2_fraction"]
+    )
+
+    plt.figure(figsize=(8, 5))
+
+    for initial_temperature_k, group in ignited_cases.groupby(
+        "initial_temperature_k"
+    ):
+        group = group.sort_values("h2_percentage")
+
+        plt.plot(
+            group["h2_percentage"],
+            group["ignition_delay_ms"],
+            marker="o",
+            label=f"{initial_temperature_k:.0f} K",
+        )
+
+    plt.xlabel("Hydrogen fraction in fuel [% mol]")
+    plt.ylabel("Ignition delay [ms]")
+    plt.title("Influence of hydrogen addition on ignition delay")
+    plt.yscale("log")
+    plt.grid(True, which="both", alpha=0.3)
+    plt.legend(title="Initial temperature")
+
+    _save_figure("ignition_delay_vs_h2_fraction.png")
+
+
+def generate_ignition_delay_figures(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Generate figures based on ignition-delay calculations."""
+    plot_ignition_delay_vs_temperature(dataframe)
+    plot_ignition_delay_vs_hydrogen_fraction(dataframe)
