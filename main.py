@@ -4,6 +4,7 @@ from src.equilibrium import (
     run_equilibrium_grid,
     save_equilibrium_results,
 )
+from src.plotting import generate_equilibrium_figures
 
 
 def main() -> None:
@@ -13,7 +14,13 @@ def main() -> None:
     equilibrium_results = run_equilibrium_grid()
     save_equilibrium_results(equilibrium_results)
 
-    print(f"Completed {len(equilibrium_results)} equilibrium cases.")
+    print("Generating equilibrium figures...")
+    generate_equilibrium_figures(equilibrium_results)
+
+    print(
+        f"Completed {len(equilibrium_results)} "
+        "equilibrium calculation cases."
+    )
 
 
 if __name__ == "__main__":
