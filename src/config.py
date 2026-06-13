@@ -69,3 +69,19 @@ SUPPORTED_REACTOR_MODELS = [
     "constant_volume",
     "constant_pressure",
 ]
+
+
+PRESSURE_SWEEP_VALUES_ATM = [
+    5.0,
+    10.0,
+    20.0,
+]
+
+PRESSURE_SWEEP_H2_FRACTIONS = [
+    0.0,
+    0.2,
+    0.4,
+]
+
+PRESSURE_SWEEP_INITIAL_TEMPERATURE_K = 1000.0
+PRESSURE_SWEEP_EQUIVALENCE_RATIO = 1.0

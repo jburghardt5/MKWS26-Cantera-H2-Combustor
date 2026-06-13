@@ -17,6 +17,10 @@ from src.config import (
     IGNITION_REACTOR_MODEL,
     MECHANISM_NAME,
     OXIDIZER_COMPOSITION,
+    PRESSURE_SWEEP_EQUIVALENCE_RATIO,
+    PRESSURE_SWEEP_H2_FRACTIONS,
+    PRESSURE_SWEEP_INITIAL_TEMPERATURE_K,
+    PRESSURE_SWEEP_VALUES_ATM,
     REACTOR_MODEL_COMPARISON_H2_FRACTIONS,
     REACTOR_MODEL_COMPARISON_TEMPERATURES_K,
     RESULTS_DATA_DIR,
@@ -399,6 +403,73 @@ def save_reactor_model_comparison(
 
     print(
         f"Reactor-model comparison saved to: "
+        f"{output_path}"
+    )
+
+
+def run_pressure_sweep() -> pd.DataFrame:
+    """Evaluate pressure influence on ignition delay."""
+    results: list[dict[str, float | str | int]] = []
+
+    number_of_cases = (
+        len(PRESSURE_SWEEP_H2_FRACTIONS)
+        * len(PRESSURE_SWEEP_VALUES_ATM)
+    )
+    case_number = 0
+
+    for h2_fraction in PRESSURE_SWEEP_H2_FRACTIONS:
+        for pressure_atm in PRESSURE_SWEEP_VALUES_ATM:
+            case_number += 1
+
+            print(
+                f"Pressure case {case_number}/{number_of_cases}: "
+                f"H2 = {100 * h2_fraction:.0f}%, "
+                f"p = {pressure_atm:.0f} atm"
+            )
+
+            try:
+                summary, _ = simulate_ignition_case(
+                    h2_fraction=h2_fraction,
+                    initial_temperature_k=(
+                        PRESSURE_SWEEP_INITIAL_TEMPERATURE_K
+                    ),
+                    pressure_atm=pressure_atm,
+                    phi=PRESSURE_SWEEP_EQUIVALENCE_RATIO,
+                    reactor_model=IGNITION_REACTOR_MODEL,
+                )
+
+            except ct.CanteraError as error:
+                summary = build_solver_error_result(
+                    h2_fraction=h2_fraction,
+                    initial_temperature_k=(
+                        PRESSURE_SWEEP_INITIAL_TEMPERATURE_K
+                    ),
+                    pressure_atm=pressure_atm,
+                    phi=PRESSURE_SWEEP_EQUIVALENCE_RATIO,
+                    reactor_model=IGNITION_REACTOR_MODEL,
+                    error=error,
+                )
+
+            results.append(summary)
+
+    return pd.DataFrame(results)
+
+
+def save_pressure_sweep_results(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Save pressure-sweep ignition-delay results."""
+    RESULTS_DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    output_path = (
+        RESULTS_DATA_DIR
+        / "pressure_sweep_results.csv"
+    )
+
+    dataframe.to_csv(output_path, index=False)
+
+    print(
+        f"Pressure-sweep results saved to: "
         f"{output_path}"
     )
 
