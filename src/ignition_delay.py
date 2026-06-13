@@ -5,13 +5,16 @@ import numpy as np
 import pandas as pd
 
 from src.config import (
+    H2_FRACTION_GRID,
     IGNITION_EQUIVALENCE_RATIO,
+    IGNITION_INITIAL_TEMPERATURES_K,
     IGNITION_MAX_TIME_S,
     IGNITION_MAX_TIME_STEP_S,
     IGNITION_MIN_TEMPERATURE_RISE_K,
     IGNITION_PRESSURE_ATM,
     MECHANISM_NAME,
     OXIDIZER_COMPOSITION,
+    RESULTS_DATA_DIR,
 )
 from src.mixture import build_fuel_composition
 
@@ -27,24 +30,6 @@ def simulate_ignition_case(
 
     Ignition delay is defined as the time corresponding to the maximum
     temperature-rise rate, dT/dt.
-
-    Parameters
-    ----------
-    h2_fraction:
-        Molar fraction of hydrogen in the CH4/H2 fuel blend.
-    initial_temperature_k:
-        Initial mixture temperature in kelvin.
-    pressure_atm:
-        Initial pressure in atmospheres.
-    phi:
-        Equivalence ratio.
-    max_time_s:
-        Maximum reactor integration time in seconds.
-
-    Returns
-    -------
-    tuple
-        Summary dictionary and time-history DataFrame.
     """
     gas = ct.Solution(MECHANISM_NAME)
     fuel_composition = build_fuel_composition(h2_fraction)
@@ -101,9 +86,11 @@ def simulate_ignition_case(
         ignition_delay_ms = (
             float(time_array[ignition_index]) * 1000.0
         )
+
         maximum_temperature_rate_k_per_s = float(
             temperature_rate[ignition_index]
         )
+
         status = "ignited"
 
     summary = {
@@ -118,6 +105,7 @@ def simulate_ignition_case(
             maximum_temperature_rate_k_per_s
         ),
         "status": status,
+        "error_message": "",
     }
 
     time_history = pd.DataFrame(
@@ -130,16 +118,77 @@ def simulate_ignition_case(
     return summary, time_history
 
 
+def run_ignition_delay_grid() -> pd.DataFrame:
+    """Run the configured ignition-delay parameter sweep."""
+    results: list[dict[str, float | str]] = []
+
+    number_of_cases = (
+        len(H2_FRACTION_GRID)
+        * len(IGNITION_INITIAL_TEMPERATURES_K)
+    )
+    case_number = 0
+
+    for h2_fraction in H2_FRACTION_GRID:
+        for initial_temperature_k in IGNITION_INITIAL_TEMPERATURES_K:
+            case_number += 1
+
+            print(
+                f"Ignition case {case_number}/{number_of_cases}: "
+                f"H2 = {100 * h2_fraction:.0f}%, "
+                f"T0 = {initial_temperature_k:.0f} K"
+            )
+
+            try:
+                summary, _ = simulate_ignition_case(
+                    h2_fraction=h2_fraction,
+                    initial_temperature_k=initial_temperature_k,
+                )
+
+            except ct.CanteraError as error:
+                summary = {
+                    "phi": IGNITION_EQUIVALENCE_RATIO,
+                    "h2_fraction": h2_fraction,
+                    "initial_temperature_k": initial_temperature_k,
+                    "pressure_atm": IGNITION_PRESSURE_ATM,
+                    "ignition_delay_ms": float("nan"),
+                    "maximum_temperature_k": float("nan"),
+                    "temperature_rise_k": float("nan"),
+                    "maximum_temperature_rate_k_per_s": float("nan"),
+                    "status": "solver_error",
+                    "error_message": str(error).splitlines()[0],
+                }
+
+            results.append(summary)
+
+    return pd.DataFrame(results)
+
+
+def save_ignition_delay_results(dataframe: pd.DataFrame) -> None:
+    """Save ignition-delay results to a CSV file."""
+    RESULTS_DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    output_path = RESULTS_DATA_DIR / "ignition_delay_results.csv"
+    dataframe.to_csv(output_path, index=False)
+
+    print(f"Ignition-delay results saved to: {output_path}")
+
+
 if __name__ == "__main__":
-    test_result, test_history = simulate_ignition_case(
-        h2_fraction=0.0,
-        initial_temperature_k=1000.0,
+    ignition_results = run_ignition_delay_grid()
+    save_ignition_delay_results(ignition_results)
+
+    print()
+    print(
+        ignition_results[
+            [
+                "initial_temperature_k",
+                "h2_fraction",
+                "ignition_delay_ms",
+                "status",
+            ]
+        ].to_string(index=False)
     )
 
-    print("Single ignition-delay test")
-    print("--------------------------")
-
-    for key, value in test_result.items():
-        print(f"{key}: {value}")
-
-    print(f"Recorded time points: {len(test_history)}")
+    print()
+    print("Status summary:")
+    print(ignition_results["status"].value_counts())
