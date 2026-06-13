@@ -320,3 +320,159 @@ def plot_maximum_temperature_vs_equivalence_ratio(
     _save_figure(
         "maximum_temperature_vs_equivalence_ratio.png"
     )
+
+
+def _plot_combustor_grouped_by_phi(
+    dataframe: pd.DataFrame,
+    y_column: str,
+    y_label: str,
+    title: str,
+    filename: str,
+    y_scale: str = "linear",
+    y_limits: tuple[float, float] | None = None,
+) -> None:
+    """Plot combustor residence-time results in phi panels."""
+    converged_cases = dataframe.loc[
+        dataframe["status"].isin(["stable", "extinguished"])
+    ].copy()
+
+    phi_values = sorted(converged_cases["phi"].unique())
+    figure, axes = plt.subplots(
+        1,
+        len(phi_values),
+        figsize=(10, 5),
+        sharey=True,
+    )
+
+    if len(phi_values) == 1:
+        axes = [axes]
+
+    for axis, phi in zip(axes, phi_values):
+        phi_group = converged_cases.loc[
+            converged_cases["phi"] == phi
+        ]
+
+        for h2_fraction, group in phi_group.groupby(
+            "h2_fraction"
+        ):
+            group = group.sort_values("residence_time_ms")
+            group = group.dropna(subset=[y_column])
+
+            if group.empty:
+                continue
+
+            axis.plot(
+                group["residence_time_ms"],
+                group[y_column],
+                marker="o",
+                label=f"{100 * h2_fraction:.0f}% H2",
+            )
+
+        axis.set_xscale("log")
+        axis.set_xlabel("Residence time [ms]")
+        axis.set_title(rf"$\phi$ = {phi:.1f}")
+        axis.grid(True, which="both", alpha=0.3)
+
+        if y_scale == "log":
+            axis.set_yscale("log")
+
+        if y_limits is not None:
+            axis.set_ylim(y_limits)
+
+    axes[0].set_ylabel(y_label)
+    axes[-1].legend(title="Hydrogen fraction")
+    figure.suptitle(title)
+
+    _save_figure(filename)
+
+
+def plot_combustor_temperature_vs_residence_time(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot PSR outlet temperature against residence time."""
+    _plot_combustor_grouped_by_phi(
+        dataframe=dataframe,
+        y_column="outlet_temperature_k",
+        y_label="Outlet temperature [K]",
+        title="Zero-dimensional PSR outlet temperature",
+        filename="combustor_temperature_vs_residence_time.png",
+    )
+
+
+def plot_combustor_ch4_conversion_vs_residence_time(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot CH4 conversion against residence time."""
+    plot_data = dataframe.copy()
+    plot_data = plot_data.dropna(
+        subset=["ch4_conversion_percent"]
+    )
+
+    _plot_combustor_grouped_by_phi(
+        dataframe=plot_data,
+        y_column="ch4_conversion_percent",
+        y_label="CH4 conversion [%]",
+        title="Zero-dimensional PSR CH4 conversion",
+        filename=(
+            "combustor_ch4_conversion_vs_residence_time.png"
+        ),
+        y_limits=(0.0, 100.0),
+    )
+
+
+def plot_combustor_co_vs_residence_time(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot finite-rate PSR CO mole fraction against residence time."""
+    plot_data = dataframe.loc[
+        dataframe["status"] == "stable"
+    ].copy()
+    plot_data["co_ppm"] = plot_data["x_co"] * 1.0e6
+    positive_values = plot_data.loc[
+        plot_data["co_ppm"].notna(),
+        "co_ppm",
+    ]
+    y_scale = (
+        "log"
+        if not positive_values.empty
+        and (positive_values > 0.0).all()
+        else "linear"
+    )
+
+    _plot_combustor_grouped_by_phi(
+        dataframe=plot_data,
+        y_column="co_ppm",
+        y_label="CO concentration [ppm]",
+        title="Idealised zero-dimensional finite-rate PSR CO",
+        filename="combustor_co_vs_residence_time.png",
+        y_scale=y_scale,
+    )
+
+
+def plot_combustor_no_vs_residence_time(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot idealised finite-rate PSR NO mole fraction."""
+    plot_data = dataframe.copy()
+    plot_data["no_ppm"] = plot_data["x_no"] * 1.0e6
+
+    _plot_combustor_grouped_by_phi(
+        dataframe=plot_data,
+        y_column="no_ppm",
+        y_label="NO concentration [ppm]",
+        title=(
+            "Idealised PSR NO concentration, "
+            "not a certified engine emission index"
+        ),
+        filename="combustor_no_vs_residence_time.png",
+    )
+
+
+def generate_combustor_figures(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Generate all perfectly stirred combustor figures."""
+    plot_combustor_temperature_vs_residence_time(dataframe)
+    plot_combustor_ch4_conversion_vs_residence_time(dataframe)
+    plot_combustor_co_vs_residence_time(dataframe)
+    plot_combustor_no_vs_residence_time(dataframe)

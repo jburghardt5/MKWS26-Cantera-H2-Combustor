@@ -1,5 +1,9 @@
 """Main entry point for the MKWS combustion project."""
 
+from src.combustor import (
+    run_combustor_grid,
+    save_combustor_results,
+)
 from src.equilibrium import (
     run_equilibrium_grid,
     save_equilibrium_results,
@@ -16,6 +20,7 @@ from src.ignition_delay import (
 )
 from src.plotting import (
     generate_equilibrium_figures,
+    generate_combustor_figures,
     generate_ignition_delay_figures,
     plot_ignition_delay_vs_equivalence_ratio,
     plot_ignition_delay_vs_pressure,
@@ -69,13 +74,21 @@ def main() -> None:
     )
 
     print()
+    print("Running perfectly stirred combustor analysis...")
+
+    combustor_results = run_combustor_grid()
+    save_combustor_results(combustor_results)
+    generate_combustor_figures(combustor_results)
+
+    print()
     print(
         f"Completed {len(equilibrium_results)} equilibrium cases, "
         f"{len(ignition_results)} primary ignition-delay cases, "
         f"{len(comparison_results)} reactor-model comparisons, "
         f"{len(pressure_results)} pressure-sweep cases, "
-        f"and {len(equivalence_ratio_results)} "
-        "equivalence-ratio cases."
+        f"{len(equivalence_ratio_results)} "
+        "equivalence-ratio cases, and "
+        f"{len(combustor_results)} combustor cases."
     )
 
 
