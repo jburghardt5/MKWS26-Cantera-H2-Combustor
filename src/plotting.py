@@ -476,3 +476,75 @@ def generate_combustor_figures(
     plot_combustor_ch4_conversion_vs_residence_time(dataframe)
     plot_combustor_co_vs_residence_time(dataframe)
     plot_combustor_no_vs_residence_time(dataframe)
+
+
+def plot_laminar_flame_speed_vs_equivalence_ratio(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot laminar flame speed against equivalence ratio."""
+    plot_data = dataframe.loc[
+        dataframe["status"] == "converged"
+    ].copy()
+
+    plt.figure(figsize=(8, 5))
+
+    for h2_fraction, group in plot_data.groupby("h2_fraction"):
+        group = group.sort_values("phi")
+
+        plt.plot(
+            group["phi"],
+            group["laminar_flame_speed_cm_s"],
+            marker="o",
+            label=f"{100 * h2_fraction:.0f}% H2",
+        )
+
+    plt.xlabel(r"Equivalence ratio, $\phi$")
+    plt.ylabel("Laminar flame speed [cm/s]")
+    plt.title(
+        "Laminar flame speed of hydrogen-enriched methane-air mixtures"
+    )
+    plt.grid(True, alpha=0.3)
+    plt.legend(title="Hydrogen fraction in fuel")
+    plt.tight_layout()
+
+    _save_figure("flame_speed_vs_equivalence_ratio.png")
+
+
+def plot_laminar_flame_speed_vs_hydrogen_fraction(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Plot laminar flame speed against hydrogen fraction."""
+    plot_data = dataframe.loc[
+        dataframe["status"] == "converged"
+    ].copy()
+
+    plt.figure(figsize=(8, 5))
+
+    for phi, group in plot_data.groupby("phi"):
+        group = group.sort_values("h2_fraction")
+
+        plt.plot(
+            100.0 * group["h2_fraction"],
+            group["laminar_flame_speed_cm_s"],
+            marker="o",
+            label=rf"$\phi$ = {phi:.1f}",
+        )
+
+    plt.xlabel("Hydrogen fraction in fuel [% mol]")
+    plt.ylabel("Laminar flame speed [cm/s]")
+    plt.title(
+        "Effect of hydrogen enrichment on laminar flame speed"
+    )
+    plt.grid(True, alpha=0.3)
+    plt.legend(title="Equivalence ratio")
+    plt.tight_layout()
+
+    _save_figure("flame_speed_vs_h2_fraction.png")
+
+
+def generate_flame_speed_figures(
+    dataframe: pd.DataFrame,
+) -> None:
+    """Generate all laminar flame-speed figures."""
+    plot_laminar_flame_speed_vs_equivalence_ratio(dataframe)
+    plot_laminar_flame_speed_vs_hydrogen_fraction(dataframe)
