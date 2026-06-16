@@ -61,10 +61,12 @@ residence-time grid.
 \section{Introduction}
 Hydrogen is widely studied as a clean fuel for gas-fired combustors and
 turbines, and blending hydrogen into methane is a practical near-term route to
-lowering carbon emissions from existing equipment \citep{bdaiwi2024}. Adding
-hydrogen is known to increase the laminar burning velocity and the adiabatic
-flame temperature, to shorten ignition delay, and to raise the risk of
-flashback, while also affecting \ce{NOx} formation \citep{li2017,bdaiwi2024}.
+lowering carbon emissions from existing equipment \citep{bdaiwi2024}.
+Published experimental and review studies report that hydrogen enrichment
+generally increases laminar burning velocity and changes ignition and flame
+stability characteristics. Its implications for flashback and nitrogen-oxide
+formation depend strongly on mixture composition and operating conditions
+\citep{li2017,bdaiwi2024}.
 
 The objective of this study is to quantify, with a single consistent kinetic
 model, how the molar hydrogen fraction in a \ce{CH4}/\ce{H2} fuel blend affects:
@@ -302,29 +304,11 @@ combustor-oriented idealisation, but it is not a complete gas-turbine model.
 \subsection{Laminar flame speed}
 \label{sec:flamespeed}
 The computed laminar flame speed of stoichiometric methane--air at reference
-conditions is \SI{37.68}{\centi\meter\per\second}. This is close to the
-approximately \SI{38}{\centi\meter\per\second} methane--air reference value
-reported for comparable conditions \citep{li2017,turns2012}, providing a
-reference consistency check on the flame-speed setup. Hydrogen enrichment
-increases the calculated stoichiometric flame
-speed to \SI{52.16}{\centi\meter\per\second} at \SI{40}{\percent} hydrogen in
-the fuel (Figure~\ref{fig:sl}).
-
-\begin{table}[htbp]
-  \centering
-  \caption{Laminar flame-speed reference consistency check at
-           \SI{300}{\kelvin}, \SI{1}{\atmosphere} and $\phi=1.0$.}
-  \label{tab:validation}
-  \begin{tabular}{lcc}
-    \toprule
-    Fuel & This work [\si{\centi\meter\per\second}] &
-           Reference [\si{\centi\meter\per\second}] \\
-    \midrule
-    \ce{CH4}/air (\SI{0}{\percent} \ce{H2})  & 37.68 & $\approx$ 38 \\
-    \ce{CH4}/\ce{H2}/air (\SI{40}{\percent} \ce{H2}) & 52.16 & -- \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+conditions is \SI{37.68}{\centi\meter\per\second}. This value is reported as
+a result of the present \texttt{FreeFlame} model; no dedicated experimental
+validation was performed. Hydrogen enrichment increases the calculated
+stoichiometric flame speed to \SI{52.16}{\centi\meter\per\second} at
+\SI{40}{\mole\percent} hydrogen in the fuel (Figure~\ref{fig:sl}).
 
 \begin{figure}[htbp]
   \centering
@@ -394,11 +378,11 @@ at $\phi=1.0$, all three tested fuel blends share the same
 
 \subsection{Nitrogen oxide formation}
 The equilibrium and PSR results report \ce{NO} mole fractions from the
-GRI-Mech~3.0 chemistry. The present calculations show how the predicted
-\ce{NO} level changes across the tested hydrogen fractions, equivalence ratios
-and residence times. Detailed pathway attribution is not attempted here and
-would require a separate reaction-path or sensitivity analysis
-\citep{millerbowman1989}.
+GRI-Mech~3.0 chemistry. Established nitrogen-chemistry pathways in combustion
+are reviewed by \citet{millerbowman1989}. The present study does not perform
+reaction-path, rate-of-production or sensitivity analysis, so it reports only
+the overall \ce{NO} trends predicted by the selected mechanism. These values
+are not certified engine-emission indices.
 
 % ===========================================================================
 \section{Model limitations}
