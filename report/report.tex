@@ -8,6 +8,7 @@
 % --- Layout ----------------------------------------------------------------
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \usepackage{parskip}
+\raggedbottom
 
 % --- Math, units, chemistry ------------------------------------------------
 \usepackage{amsmath}
@@ -48,7 +49,7 @@
   \vspace{0.25cm}
   {\large Wydział Mechaniczny Energetyki i Lotnictwa\par}
   \vspace{1.2cm}
-  {\large Komputerowe Metody w Spalaniu\par}
+  {\large Metody komputerowe w spalaniu\par}
   \vfill
   {\LARGE\bfseries Numerical Study of Hydrogen-Enriched Methane--Air Combustion\par}
   \vspace{0.35cm}
@@ -227,7 +228,7 @@ ratio = 3.0, slope = 0.06 and curve = 0.12.
 A perfectly stirred reactor (PSR) is built from an inlet reservoir, an
 \texttt{IdealGasReactor} and an exhaust reservoir, coupled by a
 \texttt{MassFlowController} and a \texttt{PressureController}. The inlet mass
-flow is set as $\dot{m} = m_\mathrm{reactor}/\tau_\mathrm{res}$, allowing the
+flow is set as $\dot{m} = \frac{m_\mathrm{reactor}}{\tau_\mathrm{res}}$, allowing the
 residence time~$\tau_\mathrm{res}$ to be swept. The PSR is zero-dimensional,
 adiabatic and perfectly stirred. It is initialised from equilibrium products at
 the inlet enthalpy and pressure, then continued from long to short residence
@@ -239,7 +240,7 @@ inlet temperature is \SI{1000}{\kelvin}, the pressure is
 \SI{10}{\atmosphere}, the tested equivalence ratios are $\phi=0.7$ and 1.0,
 and the hydrogen fractions are 0, 20 and \SI{40}{\mole\percent}. The
 residence-time grid is 0.001 to \SI{50}{\milli\second} as configured, and the
-hot-gas residence time is $\tau=m_\mathrm{ss}/\dot{m}$. Equilibrium-product
+hot-gas residence time is $\tau=\frac{m_\mathrm{ss}}{\dot{m}}$. Equilibrium-product
 initialisation is used before continuation. A \SI{500}{\kelvin} temperature
 rise is used as the operational classification threshold between extinguished
 and stable cases.
@@ -286,7 +287,6 @@ is used in the discussion.
   }
 \end{table}
 
-\FloatBarrier
 \clearpage
 
 % ===========================================================================
@@ -352,22 +352,22 @@ not be interpreted as actual engine emissions: they represent infinite-time
 adiabatic chemical equilibrium at fixed enthalpy and pressure, without finite
 residence time, turbulent mixing, heat loss, or exhaust quenching.
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.7\textwidth]{tad_vs_phi.png}
+  \includegraphics[width=0.78\textwidth]{tad_vs_phi.png}
   \caption{Adiabatic flame temperature versus equivalence ratio for
            different hydrogen fractions at $T_0=\SI{900}{\kelvin}$ and
            $p=\SI{10}{\atmosphere}$.}
   \label{fig:tad}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
   \centering
-  \begin{subfigure}{0.48\textwidth}
+  \begin{subfigure}{0.49\textwidth}
     \includegraphics[width=\textwidth]{no_vs_phi.png}
     \caption{Equilibrium \ce{NO}.}
   \end{subfigure}\hfill
-  \begin{subfigure}{0.48\textwidth}
+  \begin{subfigure}{0.49\textwidth}
     \includegraphics[width=\textwidth]{co_vs_phi.png}
     \caption{Equilibrium \ce{CO}.}
   \end{subfigure}
@@ -375,8 +375,6 @@ residence time, turbulent mixing, heat loss, or exhaust quenching.
            $T_0=\SI{900}{\kelvin}$ and $p=\SI{10}{\atmosphere}$.}
   \label{fig:eq-species}
 \end{figure}
-
-\FloatBarrier
 
 \subsection{Nitrogen oxide formation}
 The equilibrium and PSR results report \ce{NO} mole fractions from the
@@ -422,14 +420,15 @@ reported as outcomes of the present finite-rate simulations; detailed radical
 pathway attribution would require additional reaction-path or sensitivity
 analysis.
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
   \centering
-  \begin{subfigure}{0.48\textwidth}
+  \begin{subfigure}{0.78\textwidth}
     \includegraphics[width=\textwidth]{ignition_delay_vs_temperature.png}
     \caption{Versus initial temperature at $\phi=1.0$ and
              $p=\SI{10}{\atmosphere}$.}
-  \end{subfigure}\hfill
-  \begin{subfigure}{0.48\textwidth}
+  \end{subfigure}
+
+  \begin{subfigure}{0.78\textwidth}
     \includegraphics[width=\textwidth]{ignition_delay_vs_pressure.png}
     \caption{Versus pressure at $T_0=\SI{1000}{\kelvin}$ and $\phi=1.0$.}
   \end{subfigure}
@@ -437,9 +436,9 @@ analysis.
   \label{fig:ign}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.68\textwidth]{ignition_delay_vs_h2_fraction.png}
+  \includegraphics[width=0.82\textwidth]{ignition_delay_vs_h2_fraction.png}
   \caption{Constant-pressure ignition delay versus hydrogen fraction at
            $\phi=1.0$, $p=\SI{10}{\atmosphere}$ and
            $T_0=900$--\SI{1100}{\kelvin}. The logarithmic axis highlights
@@ -448,13 +447,14 @@ analysis.
   \label{fig:ign-h2}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
   \centering
-  \begin{subfigure}{0.48\textwidth}
+  \begin{subfigure}{0.78\textwidth}
     \includegraphics[width=\textwidth]{ignition_delay_vs_equivalence_ratio.png}
     \caption{Ignition delay.}
-  \end{subfigure}\hfill
-  \begin{subfigure}{0.48\textwidth}
+  \end{subfigure}
+
+  \begin{subfigure}{0.78\textwidth}
     \includegraphics[width=\textwidth]{maximum_temperature_vs_equivalence_ratio.png}
     \caption{Maximum temperature.}
   \end{subfigure}
@@ -464,7 +464,75 @@ analysis.
   \label{fig:ign-phi}
 \end{figure}
 
-\FloatBarrier
+\subsection{Two-dimensional ignition-delay map}
+A supplementary ignition-delay map was computed with the same homogeneous,
+adiabatic, constant-pressure reactor formulation as the one-dimensional
+ignition-delay sweeps. The pressure was fixed at
+$p=\SI{10}{\atmosphere}$, the initial temperature was varied from
+\SI{900}{\kelvin} to \SI{1100}{\kelvin} in \SI{25}{\kelvin} increments,
+and the equivalence ratio covered $\phi=0.6$--1.4 in increments of 0.1.
+The hydrogen fractions were 0, 20 and \SI{40}{\mole\percent} in the fuel.
+The map is intended for comparing finite-rate ignition trends across this
+idealised parameter space; it is not an operational map of a real combustor,
+and it does not include flow, turbulence, recirculation, wall heat loss or
+geometry effects.
+
+All 243 grid points ignited within the simulated time. Figure~\ref{fig:ign-map}
+shows that the combined temperature--equivalence-ratio dependence changes
+substantially with hydrogen addition. For methane--air the delay spans
+\SI{14.28}{\milli\second} at $T_0=\SI{1100}{\kelvin}$, $\phi=0.6$ to
+\SI{654.92}{\milli\second} at $T_0=\SI{900}{\kelvin}$, $\phi=1.4$.
+At \SI{40}{\mole\percent} hydrogen, the corresponding range is
+\SI{1.26}{\milli\second} at $T_0=\SI{1100}{\kelvin}$, $\phi=1.4$ to
+\SI{221.04}{\milli\second} at $T_0=\SI{900}{\kelvin}$, $\phi=0.6$.
+The maximum difference between the maximum-$\mathrm{d}T/\mathrm{d}t$ delay
+criterion and the peak-\ce{OH} criterion is 0.156\%, so the two indicators are
+consistent for this diagnostic grid.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{ignition_delay_map.png}
+  \caption{Two-dimensional constant-pressure ignition-delay map for
+           \ce{CH4}/\ce{H2}--air mixtures at $p=\SI{10}{\atmosphere}$,
+           $T_0=\SI{900}{\kelvin}$--\SI{1100}{\kelvin},
+           $\phi=0.6$--1.4 and fuel hydrogen fractions of 0, 20 and
+           \SI{40}{\mole\percent}. Each panel uses the actual $9\times9$
+           grid, the colour scale is logarithmic and common to all panels,
+           and the white labels mark constant ignition-delay isolines in
+           milliseconds. This is an ideal homogeneous-reactor diagnostic,
+           not an operational map of a real combustion chamber.}
+  \label{fig:ign-map}
+\end{figure}
+
+The ignition-delay reduction factor in Figure~\ref{fig:ign-reduction} is
+computed only where both cases ignite:
+\begin{equation}
+  R_{\tau}
+  =
+  \frac{
+    \tau_{\mathrm{ign},\,0\%\,\ce{H2}}
+  }{
+    \tau_{\mathrm{ign},\,40\%\,\ce{H2}}
+  }.
+\end{equation}
+It ranges from 2.54 at $T_0=\SI{900}{\kelvin}$, $\phi=0.6$ to 16.28
+at $T_0=\SI{1100}{\kelvin}$, $\phi=1.4$. Values greater than one mean that
+the calculated ignition delay is shorter after adding \SI{40}{\mole\percent}
+hydrogen to the fuel. This factor is a kinetic ignition-delay comparison
+only, not an engine efficiency, performance or emissions metric.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=0.88\textwidth]{ignition_delay_reduction_factor.png}
+  \caption{Ignition-delay reduction factor
+           $R_{\tau}=\frac{\tau_{\mathrm{ign},\,0\%\,\ce{H2}}}
+           {\tau_{\mathrm{ign},\,40\%\,\ce{H2}}}$ for the same
+           $T_0$--$\phi$ grid at $p=\SI{10}{\atmosphere}$. Values above one
+           indicate a shorter calculated ignition delay for the
+           \SI{40}{\mole\percent} hydrogen blend; the quantity is not an
+           engine-efficiency or combustor-performance metric.}
+  \label{fig:ign-reduction}
+\end{figure}
 
 \subsection{Constant-volume versus constant-pressure reactors}
 The reactor-model comparison isolates the effect of the constant-volume versus
@@ -484,17 +552,15 @@ compared with constant-volume values of \SI{79.74}{\milli\second},
 constant-pressure reactor is therefore more representative of the adopted
 combustor-oriented idealisation, but it is not a complete gas-turbine model.
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.7\textwidth]{reactor_model_comparison.png}
+  \includegraphics[width=0.82\textwidth]{reactor_model_comparison.png}
   \caption{Ignition delay at $\phi=1.0$ and $p=\SI{10}{\atmosphere}$:
            constant-volume versus constant-pressure reactor for
            $T_0=900$, 1000 and \SI{1100}{\kelvin}, and hydrogen fractions
            of 0, 20 and \SI{40}{\mole\percent}.}
   \label{fig:cvcp}
 \end{figure}
-
-\FloatBarrier
 
 \subsection{Laminar flame speed}
 \label{sec:flamespeed}
@@ -505,21 +571,19 @@ validation was performed. Hydrogen enrichment increases the calculated
 stoichiometric flame speed to \SI{52.16}{\centi\meter\per\second} at
 \SI{40}{\mole\percent} hydrogen in the fuel (Figure~\ref{fig:sl}).
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
   \centering
-  \begin{subfigure}{0.48\textwidth}
+  \begin{subfigure}{0.49\textwidth}
     \includegraphics[width=\textwidth]{flame_speed_vs_equivalence_ratio.png}
     \caption{Versus equivalence ratio.}
   \end{subfigure}\hfill
-  \begin{subfigure}{0.48\textwidth}
+  \begin{subfigure}{0.49\textwidth}
     \includegraphics[width=\textwidth]{flame_speed_vs_h2_fraction.png}
     \caption{Versus hydrogen fraction.}
   \end{subfigure}
   \caption{Laminar flame speed of hydrogen-enriched methane--air flames.}
   \label{fig:sl}
 \end{figure}
-
-\FloatBarrier
 
 \subsection{Grid-refinement check}
 The final flame-speed model uses multicomponent transport with Soret diffusion
@@ -553,16 +617,14 @@ For both representative cases, the current refinement settings differ from
 the tighter grid by less than \SI{1}{\percent}, indicating limited sensitivity
 of the reported flame speeds to further grid refinement.
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.62\textwidth]{flame_speed_grid_convergence.png}
+  \includegraphics[width=0.76\textwidth]{flame_speed_grid_convergence.png}
   \caption{Diagnostic comparison of current and tight FreeFlame refinement
            settings. The check is a grid-refinement consistency check for two
            representative cases, not a validation against measurements.}
   \label{fig:grid-check}
 \end{figure}
-
-\FloatBarrier
 
 \subsection{Perfectly stirred reactor stability transition}
 For each tested fuel blend and equivalence ratio, the PSR calculations provide
@@ -599,13 +661,14 @@ for methane--air to 0.002--\SI{0.005}{\milli\second} for the enriched cases;
 at $\phi=1.0$, all three tested fuel blends share the same
 0.002--\SI{0.005}{\milli\second} bracket.
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
   \centering
-  \begin{subfigure}{0.48\textwidth}
+  \begin{subfigure}{0.78\textwidth}
     \includegraphics[width=\textwidth]{combustor_temperature_vs_residence_time.png}
     \caption{Outlet temperature.}
-  \end{subfigure}\hfill
-  \begin{subfigure}{0.48\textwidth}
+  \end{subfigure}
+
+  \begin{subfigure}{0.78\textwidth}
     \includegraphics[width=\textwidth]{combustor_no_vs_residence_time.png}
     \caption{\ce{NO} mole fraction.}
   \end{subfigure}
@@ -616,9 +679,9 @@ at $\phi=1.0$, all three tested fuel blends share the same
   \label{fig:psr}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.70\textwidth]{combustor_ch4_conversion_vs_residence_time.png}
+  \includegraphics[width=0.82\textwidth]{combustor_ch4_conversion_vs_residence_time.png}
   \caption{Ideal PSR \ce{CH4} conversion versus residence time at
            $T_\mathrm{in}=\SI{1000}{\kelvin}$,
            $p=\SI{10}{\atmosphere}$, $\phi=0.7$ and 1.0. Conversion is shown
@@ -629,9 +692,6 @@ at $\phi=1.0$, all three tested fuel blends share the same
 \end{figure}
 
 \FloatBarrier
-
-\FloatBarrier
-\clearpage
 
 % ===========================================================================
 \section{Model limitations and conclusions}
