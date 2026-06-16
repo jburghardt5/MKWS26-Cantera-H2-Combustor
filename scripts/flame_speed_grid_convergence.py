@@ -131,40 +131,48 @@ def add_tight_reference_difference(dataframe: pd.DataFrame) -> pd.DataFrame:
 
 
 def save_plot(dataframe: pd.DataFrame) -> None:
-    """Save a compact diagnostic comparison plot."""
+    """Save a compact diagnostic grid-convergence plot."""
     plot_data = dataframe.loc[
         dataframe["status"] == "converged"
     ].copy()
 
-    figure, axis = plt.subplots(figsize=(6.5, 4.2))
-    x_positions = range(len(CASES))
-    width = 0.35
+    figure, axis = plt.subplots(figsize=(6.5, 4.0))
+    colors = {"CH4": "#2f4f4f", "40% H2": "#7a5c2e"}
+    markers = {"CH4": "o", "40% H2": "s"}
 
-    for offset, grid in [(-width / 2, "current"), (width / 2, "tight")]:
-        values = []
-        for case in CASES:
-            row = plot_data.loc[
-                (plot_data["case"] == case["case"])
-                & (plot_data["grid"] == grid)
-            ]
-            values.append(
-                float(row.iloc[0]["laminar_flame_speed_cm_s"])
-                if not row.empty
-                else math.nan
-            )
-        axis.bar(
-            [position + offset for position in x_positions],
-            values,
-            width=width,
-            label=grid,
+    for case in CASES:
+        case_name = str(case["case"])
+        case_data = (
+            plot_data.loc[plot_data["case"] == case_name]
+            .sort_values("grid_points")
+        )
+        if case_data.empty:
+            continue
+
+        axis.plot(
+            case_data["grid_points"],
+            case_data["laminar_flame_speed_cm_s"],
+            marker=markers[case_name],
+            linewidth=1.2,
+            markersize=5.5,
+            color=colors[case_name],
+            label=case_name,
         )
 
-    axis.set_xticks(list(x_positions))
-    axis.set_xticklabels([str(case["case"]) for case in CASES])
+        for _, row in case_data.iterrows():
+            axis.annotate(
+                str(row["grid"]),
+                (row["grid_points"], row["laminar_flame_speed_cm_s"]),
+                textcoords="offset points",
+                xytext=(5, 5),
+                fontsize=8,
+                color=colors[case_name],
+            )
+
+    axis.set_xlabel("Grid points [-]")
     axis.set_ylabel("Laminar flame speed [cm/s]")
-    axis.set_title("FreeFlame grid-refinement diagnostic")
-    axis.grid(True, axis="y", alpha=0.3)
-    axis.legend(title="Grid")
+    axis.grid(True, alpha=0.25)
+    axis.legend(frameon=False)
     figure.tight_layout()
     figure.savefig(OUTPUT_FIGURE, dpi=300, bbox_inches="tight")
     plt.close(figure)

@@ -18,11 +18,13 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{booktabs}
+\usepackage{placeins}
 \graphicspath{{assets/}{../results/figures/}{../results/diagnostics/}}
 
 % --- References ------------------------------------------------------------
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{hyperref}
+\renewcommand{\refname}{Bibliography}
 
 \sisetup{detect-all}
 \DeclareSIUnit{\atmosphere}{atm}
@@ -79,6 +81,33 @@ extinguished and hot stable steady-state solutions on the tested
 residence-time grid.
 \end{abstract}
 
+\clearpage
+\tableofcontents
+\clearpage
+
+\section*{Nomenclature}
+\addcontentsline{toc}{section}{Nomenclature}
+\begin{center}
+  \begin{tabular}{ll}
+    \toprule
+    Symbol & Meaning \\
+    \midrule
+    $\phi$ & equivalence ratio \\
+    $\tau_\mathrm{ign}$ & ignition delay \\
+    $\tau_\mathrm{res}$ & residence time \\
+    $S_L$ & laminar flame speed \\
+    $T_\mathrm{ad}$ & adiabatic flame temperature \\
+    $X_i$ & mole fraction of species $i$ \\
+    $Y_i$ & mass fraction of species $i$ \\
+    $p$ & pressure \\
+    $T_0$ & initial temperature \\
+    $\dot{m}$ & mass-flow rate \\
+    \bottomrule
+  \end{tabular}
+\end{center}
+
+\clearpage
+
 % ===========================================================================
 \section{Introduction}
 Hydrogen is widely studied as a clean fuel for gas-fired combustors and
@@ -104,8 +133,39 @@ model, how the molar hydrogen fraction in a \ce{CH4}/\ce{H2} fuel blend affects:
 and equivalence ratio; (iii) the laminar flame speed; and (iv) the behaviour
 of an ideal perfectly stirred combustor on a prescribed residence-time grid.
 
+\clearpage
+
 % ===========================================================================
 \section{Methodology}
+
+\subsection{Project workflow}
+The calculations are organised around a common definition of fuel composition,
+oxidizer composition and operating-condition grids. Table~\ref{tab:workflow} summarises the computational workflow; it is a
+project organisation diagram rather than a statement that all models are
+physically coupled in sequence.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Computational workflow used in the project.}
+  \label{tab:workflow}
+  \begin{tabular}{c}
+    \toprule
+    Configuration and fuel definition \\
+    $\downarrow$ \\
+    Equilibrium analysis \\
+    $\downarrow$ \\
+    Ignition-delay analyses \\
+    $\downarrow$ \\
+    PSR residence-time analysis \\
+    $\downarrow$ \\
+    FreeFlame analysis \\
+    $\downarrow$ \\
+    CSV outputs and figures \\
+    $\downarrow$ \\
+    Report \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \subsection{Chemical mechanism}
 All simulations were performed with Cantera \citep{cantera} using the
@@ -226,6 +286,9 @@ is used in the discussion.
   }
 \end{table}
 
+\FloatBarrier
+\clearpage
+
 % ===========================================================================
 \section{Results and discussion}
 
@@ -313,6 +376,16 @@ residence time, turbulent mixing, heat loss, or exhaust quenching.
   \label{fig:eq-species}
 \end{figure}
 
+\FloatBarrier
+
+\subsection{Nitrogen oxide formation}
+The equilibrium and PSR results report \ce{NO} mole fractions from the
+GRI-Mech~3.0 chemistry. Established nitrogen-chemistry pathways in combustion
+are reviewed by \citet{millerbowman1989}. The present study does not perform
+reaction-path, rate-of-production or sensitivity analysis, so it reports only
+the overall \ce{NO} trends predicted by the selected mechanism. These values
+are not certified engine-emission indices.
+
 \subsection{Autoignition delay}
 The ignition-delay results show a strong temperature dependence
 (Figure~\ref{fig:ign}). At $\phi=1.0$ and $p=\SI{10}{\atmosphere}$,
@@ -391,6 +464,8 @@ analysis.
   \label{fig:ign-phi}
 \end{figure}
 
+\FloatBarrier
+
 \subsection{Constant-volume versus constant-pressure reactors}
 The reactor-model comparison isolates the effect of the constant-volume versus
 constant-pressure idealisation for the same mixtures and initial temperatures.
@@ -419,6 +494,8 @@ combustor-oriented idealisation, but it is not a complete gas-turbine model.
   \label{fig:cvcp}
 \end{figure}
 
+\FloatBarrier
+
 \subsection{Laminar flame speed}
 \label{sec:flamespeed}
 The computed laminar flame speed of stoichiometric methane--air at reference
@@ -441,6 +518,8 @@ stoichiometric flame speed to \SI{52.16}{\centi\meter\per\second} at
   \caption{Laminar flame speed of hydrogen-enriched methane--air flames.}
   \label{fig:sl}
 \end{figure}
+
+\FloatBarrier
 
 \subsection{Grid-refinement check}
 The final flame-speed model uses multicomponent transport with Soret diffusion
@@ -482,6 +561,8 @@ of the reported flame speeds to further grid refinement.
            representative cases, not a validation against measurements.}
   \label{fig:grid-check}
 \end{figure}
+
+\FloatBarrier
 
 \subsection{Perfectly stirred reactor stability transition}
 For each tested fuel blend and equivalence ratio, the PSR calculations provide
@@ -547,16 +628,15 @@ at $\phi=1.0$, all three tested fuel blends share the same
   \label{fig:psr-conversion}
 \end{figure}
 
-\subsection{Nitrogen oxide formation}
-The equilibrium and PSR results report \ce{NO} mole fractions from the
-GRI-Mech~3.0 chemistry. Established nitrogen-chemistry pathways in combustion
-are reviewed by \citet{millerbowman1989}. The present study does not perform
-reaction-path, rate-of-production or sensitivity analysis, so it reports only
-the overall \ce{NO} trends predicted by the selected mechanism. These values
-are not certified engine-emission indices.
+\FloatBarrier
+
+\FloatBarrier
+\clearpage
 
 % ===========================================================================
-\section{Model limitations}
+\section{Model limitations and conclusions}
+
+\subsection{Model limitations}
 \label{sec:limitations}
 GRI-Mech~3.0 was optimised and validated for natural-gas (methane-dominated)
 combustion \citep{grimech30}. For the hydrogen fractions considered here
@@ -571,8 +651,7 @@ turbulence, geometry, recirculation or wall heat loss. The equilibrium
 calculations also assume infinite-time chemical equilibrium and therefore
 cannot represent finite-rate effects in the nozzle/exhaust.
 
-% ===========================================================================
-\section{Conclusions}
+\subsection{Conclusions}
 \begin{enumerate}
   \item At $\phi=1.0$, \SI{300}{\kelvin} and \SI{1}{\atmosphere}, increasing
   the fuel hydrogen fraction from \SI{0}{\percent} to \SI{40}{\percent}
@@ -600,7 +679,11 @@ cannot represent finite-rate effects in the nozzle/exhaust.
   interpretation.
 \end{enumerate}
 
+\clearpage
+
 % ===========================================================================
+\phantomsection
+\addcontentsline{toc}{section}{Bibliography}
 \bibliographystyle{unsrtnat}
 \bibliography{references}
 
