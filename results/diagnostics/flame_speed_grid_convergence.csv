@@ -1,0 +1,5 @@
+case,phi,h2_fraction,unburned_temperature_k,pressure_atm,grid,refine_ratio,refine_slope,refine_curve,transport_model,soret_enabled,laminar_flame_speed_cm_s,laminar_flame_speed_m_s,grid_points,status,error_message,difference_vs_tight_percent
+CH4,1.0,0.0,300.0,1.0,current,3.0,0.06,0.12,multicomponent,True,37.680729328877696,0.37680729328877693,197,converged,,0.7477611185299703
+CH4,1.0,0.0,300.0,1.0,tight,2.5,0.03,0.06,multicomponent,True,37.40105875359973,0.37401058753599725,359,converged,,0.0
+40% H2,1.0,0.4,300.0,1.0,current,3.0,0.06,0.12,multicomponent,True,52.163515677316894,0.521635156773169,202,converged,,0.1871232061964799
+40% H2,1.0,0.4,300.0,1.0,tight,2.5,0.03,0.06,multicomponent,True,52.0660879442146,0.520660879442146,382,converged,,0.0

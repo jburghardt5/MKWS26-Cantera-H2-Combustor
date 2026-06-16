@@ -18,7 +18,7 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{booktabs}
-\graphicspath{{../results/figures/}}
+\graphicspath{{assets/}{../results/figures/}{../results/diagnostics/}}
 
 % --- References ------------------------------------------------------------
 \usepackage[numbers,sort&compress]{natbib}
@@ -36,7 +36,29 @@
 \date{June 16, 2026}
 
 \begin{document}
-\maketitle
+\pagenumbering{gobble}
+\begin{titlepage}
+  \centering
+  \vspace*{1.0cm}
+  \includegraphics[width=0.40\textwidth]{meil_pw_logo.png}\par
+  \vspace{1.0cm}
+  {\Large Politechnika Warszawska\par}
+  \vspace{0.25cm}
+  {\large Wydział Mechaniczny Energetyki i Lotnictwa\par}
+  \vspace{1.2cm}
+  {\large Komputerowe Metody w Spalaniu\par}
+  \vfill
+  {\LARGE\bfseries Numerical Study of Hydrogen-Enriched Methane--Air Combustion\par}
+  \vspace{0.35cm}
+  {\Large Using Detailed Chemical Kinetics\par}
+  \vfill
+  {\large Author: Jan Burghardt\par}
+  \vspace{0.25cm}
+  {\large Date: June 16, 2026\par}
+  \vspace*{1.0cm}
+\end{titlepage}
+\clearpage
+\pagenumbering{arabic}
 
 \begin{abstract}
 This work investigates the effect of hydrogen enrichment on the combustion of
@@ -67,6 +89,13 @@ generally increases laminar burning velocity and changes ignition and flame
 stability characteristics. Its implications for flashback and nitrogen-oxide
 formation depend strongly on mixture composition and operating conditions
 \citep{li2017,bdaiwi2024}.
+
+In an engineering context, hydrogen can be added to existing gaseous fuels as
+part of fuel-flexibility or decarbonisation studies for gas-turbine or
+aero-engine combustor concepts. Such changes affect ignition propensity,
+laminar flame speed, flame temperature and combustion stability. The models
+used here are therefore treated as preliminary trend-analysis tools for
+\ce{CH4}/\ce{H2}--air mixtures, not as a complete combustor model.
 
 The objective of this study is to quantify, with a single consistent kinetic
 model, how the molar hydrogen fraction in a \ce{CH4}/\ce{H2} fuel blend affects:
@@ -155,8 +184,86 @@ initialisation is used before continuation. A \SI{500}{\kelvin} temperature
 rise is used as the operational classification threshold between extinguished
 and stable cases.
 
+\subsection{Summary of analysis scope}
+Table~\ref{tab:analysis-scope} collects the operating ranges used in the
+individual calculations. The entries are taken from the project configuration
+and the generated CSV files; they also indicate which result from each model
+is used in the discussion.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Scope of the numerical analyses.}
+  \label{tab:analysis-scope}
+  \small
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{lllllll}
+    \toprule
+    Analysis & Model & Temperature & Pressure & $\phi$ & \ce{H2} & Main result \\
+    \midrule
+    Equilibrium & HP equilibrium & \SI{900}{\kelvin} &
+    \SI{10}{\atmosphere} & 0.6--1.4 & 0--40\% &
+    $T_\mathrm{ad}$, \ce{NO}, \ce{CO} \\
+    Ignition & CP reactor & 900--\SI{1100}{\kelvin} &
+    \SI{10}{\atmosphere} & 1.0 & 0--40\% &
+    ignition delay \\
+    CV/CP comparison & homogeneous reactors & 900, 1000, \SI{1100}{\kelvin} &
+    \SI{10}{\atmosphere} & 1.0 & 0, 20, 40\% &
+    CP--CV delay change \\
+    Pressure sweep & CP reactor & \SI{1000}{\kelvin} &
+    5, 10, \SI{20}{\atmosphere} & 1.0 & 0, 20, 40\% &
+    pressure sensitivity \\
+    $\phi$ sweep & CP reactor & \SI{1000}{\kelvin} &
+    \SI{10}{\atmosphere} & 0.6--1.4 & 0, 20, 40\% &
+    delay and $T_\mathrm{max}$ \\
+    PSR & ideal stirred reactor & \SI{1000}{\kelvin} &
+    \SI{10}{\atmosphere} & 0.7, 1.0 & 0, 20, 40\% &
+    stability-transition bracket \\
+    FreeFlame & 1-D premixed flame & \SI{300}{\kelvin} &
+    \SI{1}{\atmosphere} & 0.6--1.4 & 0, 20, 40\% &
+    laminar flame speed \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table}
+
 % ===========================================================================
 \section{Results and discussion}
+
+\subsection{Key numerical results}
+The main project-level results are summarised in
+Table~\ref{tab:key-results}. The PSR entry is intentionally reported only as a
+stability-transition bracket on the tested residence-time grid.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Selected headline results for methane--air and the
+           \SI{40}{\percent} hydrogen fuel blend.}
+  \label{tab:key-results}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{llll}
+    \toprule
+    Quantity & Conditions & 0\% \ce{H2} & 40\% \ce{H2} \\
+    \midrule
+    Laminar flame speed &
+    $\phi=1.0$, \SI{300}{\kelvin}, \SI{1}{\atmosphere} &
+    \SI{37.68}{\centi\meter\per\second} &
+    \SI{52.16}{\centi\meter\per\second} \\
+    Ignition delay &
+    $\phi=1.0$, \SI{1000}{\kelvin}, \SI{10}{\atmosphere} &
+    \SI{81.99}{\milli\second} &
+    \SI{12.64}{\milli\second} \\
+    Stoichiometric $T_\mathrm{ad}$ &
+    HP equilibrium, \SI{900}{\kelvin}, \SI{10}{\atmosphere} &
+    \SI{2595.74}{\kelvin} &
+    \SI{2622.25}{\kelvin} \\
+    PSR stability-transition bracket &
+    $\phi=1.0$, \SI{1000}{\kelvin}, \SI{10}{\atmosphere} &
+    0.002--\SI{0.005}{\milli\second} &
+    0.002--\SI{0.005}{\milli\second} \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table}
 
 \subsection{Adiabatic flame temperature and equilibrium composition}
 On the tested five-point equivalence-ratio grid, the maximum adiabatic flame
@@ -259,6 +366,17 @@ analysis.
 
 \begin{figure}[htbp]
   \centering
+  \includegraphics[width=0.68\textwidth]{ignition_delay_vs_h2_fraction.png}
+  \caption{Constant-pressure ignition delay versus hydrogen fraction at
+           $\phi=1.0$, $p=\SI{10}{\atmosphere}$ and
+           $T_0=900$--\SI{1100}{\kelvin}. The logarithmic axis highlights
+           that the strongest enrichment effect occurs between pure methane
+           and the first hydrogen-containing blend in this grid.}
+  \label{fig:ign-h2}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
   \begin{subfigure}{0.48\textwidth}
     \includegraphics[width=\textwidth]{ignition_delay_vs_equivalence_ratio.png}
     \caption{Ignition delay.}
@@ -324,12 +442,53 @@ stoichiometric flame speed to \SI{52.16}{\centi\meter\per\second} at
   \label{fig:sl}
 \end{figure}
 
+\subsection{Grid-refinement check}
+The final flame-speed model uses multicomponent transport with Soret diffusion
+enabled, so the diagnostic grid-refinement check was repeated with the same
+transport settings rather than using earlier mixture-averaged calculations.
+Two representative stoichiometric cases were compared: methane--air and the
+\SI{40}{\mole\percent} hydrogen blend at \SI{300}{\kelvin} and
+\SI{1}{\atmosphere}. The current setting uses ratio = 3.0, slope = 0.06 and
+curve = 0.12; the tighter setting uses ratio = 2.5, slope = 0.03 and
+curve = 0.06.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Diagnostic FreeFlame grid-refinement check using multicomponent
+           transport and Soret diffusion.}
+  \label{tab:grid-check}
+  \begin{tabular}{llrrr}
+    \toprule
+    Case & Grid & $S_L$ [\si{\centi\meter\per\second}] &
+    Points & Difference vs. tight [\%] \\
+    \midrule
+    \ce{CH4} & current & 37.68 & 197 & 0.75 \\
+    \ce{CH4} & tight   & 37.40 & 359 & 0.00 \\
+    40\% \ce{H2} & current & 52.16 & 202 & 0.19 \\
+    40\% \ce{H2} & tight   & 52.07 & 382 & 0.00 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+For both representative cases, the current refinement settings differ from
+the tighter grid by less than \SI{1}{\percent}, indicating limited sensitivity
+of the reported flame speeds to further grid refinement.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.62\textwidth]{flame_speed_grid_convergence.png}
+  \caption{Diagnostic comparison of current and tight FreeFlame refinement
+           settings. The check is a grid-refinement consistency check for two
+           representative cases, not a validation against measurements.}
+  \label{fig:grid-check}
+\end{figure}
+
 \subsection{Perfectly stirred reactor stability transition}
 For each tested fuel blend and equivalence ratio, the PSR calculations provide
 a stability-transition bracket between cold extinguished and hot stable
-steady-state solutions on the tested residence-time grid. This ideal PSR calculation does not represent
-actual engine behaviour, CFD, turbulence, combustor geometry, recirculation or
-wall heat loss.
+steady-state solutions on the tested residence-time grid. This ideal PSR
+calculation does not represent actual engine behaviour, CFD, turbulence,
+combustor geometry, recirculation or wall heat loss.
 
 \begin{table}[htbp]
   \centering
@@ -353,7 +512,7 @@ wall heat loss.
 \end{table}
 
 These values are discrete brackets from the configured residence-time grid,
-not exact mathematical transition points. Hydrogen enrichment moves the
+not resolved transition times. Hydrogen enrichment moves the
 observed bracket for the lean $\phi=0.7$ case from 0.005--\SI{0.010}{\milli\second}
 for methane--air to 0.002--\SI{0.005}{\milli\second} for the enriched cases;
 at $\phi=1.0$, all three tested fuel blends share the same
@@ -374,6 +533,18 @@ at $\phi=1.0$, all three tested fuel blends share the same
            Inlet conditions are $T_\mathrm{in}=\SI{1000}{\kelvin}$,
            $p=\SI{10}{\atmosphere}$, with $\phi=0.7$ and 1.0.}
   \label{fig:psr}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.70\textwidth]{combustor_ch4_conversion_vs_residence_time.png}
+  \caption{Ideal PSR \ce{CH4} conversion versus residence time at
+           $T_\mathrm{in}=\SI{1000}{\kelvin}$,
+           $p=\SI{10}{\atmosphere}$, $\phi=0.7$ and 1.0. Conversion is shown
+           only as a finite-rate stirred-reactor trend; it does not include
+           mixing, geometry, wall heat loss or turbine-combustor residence
+           time distributions.}
+  \label{fig:psr-conversion}
 \end{figure}
 
 \subsection{Nitrogen oxide formation}
@@ -421,6 +592,12 @@ cannot represent finite-rate effects in the nozzle/exhaust.
   \item The present results are limited to detailed-chemistry idealisations:
   equilibrium reactors, homogeneous ignition calculations, one-dimensional
   freely propagating flames and a zero-dimensional adiabatic PSR.
+
+  \item In a simplified combustor-screening sense, hydrogen enrichment in the
+  tested \ce{CH4}/\ce{H2} blends tends to accelerate ignition and increase
+  flame speed, so it should be evaluated together with stability margins,
+  thermal loading and emissions constraints before any hardware-level
+  interpretation.
 \end{enumerate}
 
 % ===========================================================================
